@@ -37,6 +37,7 @@ Operation поля: num1 int - первое число, oper string - опера
 4 - переход на страницу настроек. Клик!
 (какой переход!)
 ![Settings page](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/settings%20page%20design.png)
+
 1 - переход на главную страницу
 2 - настройка времени выполнения сложения от 1 до 101 (в секундах)
 3 - настройка времени вычитания от 1 до 101 (в секундах)
