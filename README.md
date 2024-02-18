@@ -48,7 +48,8 @@ Operation поля: num1 int - первое число, oper string - опера
 
 # Примеры
 *для того чтобы увидеть результат надо обновить страницу
-![](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/example.png)
+![example](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/example.png)
+
 2 + 2 * 2 = 6
 5 * 10 / 5 - 60 / 15 + 20 = 46
 120 * 5 - 95 * 3 + 65 / 5 = 328
