@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <title>Настройка расчетов</title>
+    </head>
+    <body>
+        <h1>Settings</h1>
+        <div><a href="/" style="color: inherit;">Main</a></div>
+        <div>
+            <form method="post" autocomplete="off">
+                <div>
+                    <div>+</div>
+                    <input name="plus_set" type="number" value={{.Plus}} accesskey="Enter" step="1" min="1" max="101">
+                </div>
+                <div>
+                    <div>-</div>
+                    <input name="minus_set" type="number" value={{.Minus}} accesskey="Enter" step="1" min="1" max="101">
+                </div>
+                <div>
+                    <div>/</div>
+                    <input name="division_set" type="number" value={{.Division}} accesskey="Enter" step="1" min="1" max="101">
+                </div>
+                <div>
+                    <div>*</div>
+                    <input name="multiplaction_set" type="number" value={{.Multi}} accesskey="Enter" step="1" min="1" max="101">
+                </div>
+                <div>
+                    <div>Num of agents</div>
+                    <input name="numOfWorkers" type="number" value="{{.WorkersNum}}" accesskey="Enter" step="5" min="0" max="20">
+                </div>
+                <input type="submit" accesskey="Enter">
+            </form>
+        </div>
+    </body>
+</html>
