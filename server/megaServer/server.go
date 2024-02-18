@@ -10,35 +10,39 @@ import (
 	"strconv"
 )
 
-var storage Storage
+var storage Storage  // Storage (ну, а что еще)
 
+// структура выражения
 type Expression struct {
-	Id                   int
-	Start                string
-	End                  string
-	Expression           string
-	Separated_expression []string
-	Status               bool
-	Result               int
+	Id                   int	   // айдишка
+	Start                string    // начало вычислений
+	End                  string    // конец вычислений
+	Expression           string    // выражение в виде строки
+	Separated_expression []string  // выражение разделенное по частям (2+2*2 -> {"2", "+", "2", "*", "2"})
+	Status               bool  	   // статус выражения: false - считается, true - посчитано
+	Result               int	   // результат вычислений
 }
+// структура для шаблона страницы
 type Response struct {
-	Error       string
-	Expressions []Expression
+	Error       string  // сообщение
+	Expressions []Expression  // выражения
 }
+// хранилище выражений
 type Storage struct {
 	Expressions []Expression
 }
 
+// загрузка данных из csv в storage
 func (s *Storage) Download() {
-	f, err := os.Open("./data/expressions_logs.csv")
+	f, err := os.Open("./data/expressions_logs.csv")  // файлик
 	if err != nil {
 		return
 	}
 	reader := csv.NewReader(f)
-	reader.Comma = ';'
-	for {
-		line, err := reader.Read()
-		if err == io.EOF {
+	reader.Comma = ';'  // разделитель
+	for {  // проходим по строчкам
+		line, err := reader.Read()  // строчка
+		if err == io.EOF {  // файл кончился - выходим
 			break
 		} else if err != nil {
 			return
@@ -52,10 +56,12 @@ func (s *Storage) Download() {
 		if err != nil {
 			return
 		}
-		s.Expressions = append(s.Expressions, Expression{Id: id, Expression: line[1], Result: res, Status: stringToBool(line[3]), Start: line[4], End: line[5]})
+		// записываем новое выражение в storage
+		// структура csv: id, выражение, результат, статус, начало вычислений, конец вычислений
+		s.Append(Expression{Id: id, Expression: line[1], Result: res, Status: stringToBool(line[3]), Start: line[4], End: line[5]})
 	}
-
 }
+// загрузка данных в csv
 func (s *Storage) Upload() {
 	f, err := os.Create("./data/expressions_logs.csv")
 	if err != nil {
@@ -65,87 +71,81 @@ func (s *Storage) Upload() {
 	writer := csv.NewWriter(f)
 	defer writer.Flush()
 	writer.Comma = ';'
+	// построчно записываем данные выражений
 	for _, expr := range s.Expressions {
 		writer.Write([]string{strconv.Itoa(expr.Id), expr.Expression, strconv.Itoa(expr.Result), boolToString(expr.Status), expr.Start, expr.End})
 	}
 }
+// строка в булевое (для Upload)
 func stringToBool(str string) bool{
 	return str == "1"
 }
+// булевое в строку (для Download)
 func boolToString(b bool) string{
 	if b{
 		return "1"
 	}
 	return "0"
 }
+// инициализация storage
 func Init() *Storage {
 	s := Storage{Expressions: make([]Expression, 0)}
 	s.Download()
 	return &s
 }
+// добаление выражения в storage
 func (s *Storage) Append(exp Expression) {
 	s.Expressions = append(s.Expressions, exp)
 }
-
+// получение storage из main (там инициализируется)
 func GetStorage(stor Storage) {
 	storage = stor
 }
 
+// обработчик главной страницы + check request
 func GettingResponse(w http.ResponseWriter, r *http.Request) {
-	resp := RemoveSpaces(r.FormValue("expression"))
-	for _, expr := range orchestrator.Results {
-		if expr.Status && !storage.Expressions[expr.Id].Status {
+	resp := RemoveSpaces(r.FormValue("expression"))  // получение выражения
+	for _, expr := range orchestrator.Results {  // проверка резултатов вычислений из orchestrator
+		if expr.Status && !storage.Expressions[expr.Id].Status {  // статус - тру
+			// обновление значение в storage
 			storage.Expressions[expr.Id].Result = expr.Result
 			storage.Expressions[expr.Id].Status = expr.Status
 			storage.Expressions[expr.Id].End = expr.End
 			storage.Expressions[expr.Id].Start = expr.Start
-			storage.Upload()
-
+			storage.Upload()  // загрузка обновленных данных в csv
 		}
 	}
-	tmpl, err := template.ParseFiles("./templates/main_paper.html")
+	tmpl, err := template.ParseFiles("./templates/main_paper.html")  // шаблонизатор страницы
 	if err != nil {
 		http.Error(w, "", 500)
 	}
-	for _, expres := range storage.Expressions {
+	for _, expres := range storage.Expressions {  // проверка на наличие такого выражения
 		if expres.Expression == resp { // выражение уже считается
-			// w.WriteHeader(http.StatusOK)
-			// w.Header().Set("Content-Type", "application/json")
-			// res := make(map[string]string)
-			// res["info"] = "expression is already computing"
-			// jsonResp, _ := json.Marshal(res)
-			// w.Write(jsonResp)
 			response := Response{Error: "expression is already computing", Expressions: reverse(storage.Expressions)}
-			tmpl.Execute(w, response)
+			tmpl.Execute(w, response)  // вывод сообщения и выражений
 			return
 		}
 	}
-	expression := Expression{Id: len(storage.Expressions) - 1, Expression: resp}
+	expression := Expression{Id: len(storage.Expressions), Expression: resp, Status: false}  // окей, уникальное выражение, создаем объект
 	if err := expression.Separate_expression(); err != "" { // ошибка при обработке выражения
-		// http.Error(w, "", 400)
-		// w.WriteHeader(http.StatusBadRequest)
-		// w.Header().Set("Content-Type", "application/json")
-		// res := make(map[string]string)
-		// res["info"] = err
-		// jsonResp, _ := json.Marshal(res)
-		// w.Write(jsonResp)
 		response := Response{Error: err, Expressions: reverse(storage.Expressions)}
-		tmpl.Execute(w, response)
+		tmpl.Execute(w, response)  // вывод ошибки и списка выражений
 		return
 	}
-	expression.Id = len(storage.Expressions)
-	expression.Status = false
 
-	storage.Append(expression)
-	storage.Upload()
+	storage.Append(expression)  // добавляем выражение в storage
+	storage.Upload()  // загружаем обновление в csv
 	response := Response{Error: "all is good. Expression is computing", Expressions: reverse(storage.Expressions)}
-	tmpl.Execute(w, response)
+	tmpl.Execute(w, response)  // сообщение + список выражений
 
+	// отправка выражения оркестратору
+	// создание объекта типа orchestrator.Expression - копии Expression здесь
 	expre := orchestrator.Expression{Id: expression.Id, Expression: expression.Expression, Separated_expression: expression.Separated_expression}
-	go expre.Orchestrator()
+	go expre.Orchestrator()  // запуск оркестратора
 
 }
 
+// переворот массива
 func reverse(exps []Expression) []Expression {
 	res := make([]Expression, len(exps))
 	for i := len(exps) - 1; i >= 0; i-- {
@@ -214,6 +214,7 @@ func in(s1 string, s2 string) bool {
 	}
 	return false
 }
+// стирание пробелов в строке
 func RemoveSpaces(ex string) string {
 	res := ""
 	for _, i := range ex {
