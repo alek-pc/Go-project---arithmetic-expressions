@@ -30,4 +30,4 @@ Operation поля: num1 int - первое число, oper string - опера
 
 
 # Примеры
-![MainPage]()
+![MainPage](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/Main%20page%20design.png)
