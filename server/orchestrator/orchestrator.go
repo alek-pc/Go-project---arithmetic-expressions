@@ -28,7 +28,10 @@ type Operation struct {
 	status bool // false - computing true - computed
 }
 var Results []Expression  // результаты всех вычислений (для получения из server)
-var Agents int
+// хранилище выражений
+type Storage struct {
+	Expressions []Expression
+}
 
 // великий и могучий ОРКЕСТРАТОР
 func (expr *Expression)Orchestrator() {
@@ -55,86 +58,92 @@ func (expr *Expression)Orchestrator() {
 
 		prev_num_used := false		// предыдущее число использовалось в выражении
 
-		for i := 0; i < len(operation)-2; i += 2 {  // проходимся по operations
-			// получаем число сейчас, следующее число, следующую операцию
-			num1 := operation[i]
-			num1Val := *num1
-			if i < len(operation)-3 {
-				next_oper = *operation[i+3]
-			}else{
-				next_oper = Operation{status: true}
-			}
-			oper := *operation[i+1]
-			num2 := operation[i+2]
-			num2Val := *num2
+		// если есть свободные агенты
+		if set.Agents.FreeAgent(){
+			for i := 0; i < len(operation)-2; i += 2 {  // проходимся по operations
+				// получаем число сейчас, следующее число, следующую операцию
+				num1 := operation[i]
+				num1Val := *num1
+				if i < len(operation)-3 {
+					next_oper = *operation[i+3]
+				}else{
+					next_oper = Operation{status: true}
+				}
+				oper := *operation[i+1]
+				num2 := operation[i+2]
+				num2Val := *num2
 
-			// fmt.Println(num1, oper, num2, prev_oper, next_oper)
-			// fmt.Println(prev_num, num1Val, num2Val, prev_num_used, prev_oper, oper, next_oper)
-			
-			// проверка на добавление числа на следующей итерации (в предыдущей операции не участвовало, сейчас тоже не будет)
-			if (!num1Val.status || ((oper.oper == "+" || oper.oper == "-") &&
-			(next_oper.status && (next_oper.oper == "*" || next_oper.oper == "/") || !prev_num.status)) || prev_oper.oper == "*" || prev_oper.oper == "/") && 
-			(!prev_num_used || !num2Val.status){
-	 
+				// fmt.Println(num1, oper, num2, prev_oper, next_oper)
+				// fmt.Println(prev_num, num1Val, num2Val, prev_num_used, prev_oper, oper, next_oper, set.Agents)
 				
-				expre = append(expre, num1)
-				// fmt.Println("added num1", num1)
-			 }
-			 // добавление знака на следующую итерацию
-			if (prev_oper.oper == "*" || prev_oper.oper == "/") || 
-			(next_oper.oper == "*" || next_oper.oper == "/") && (oper.oper == "+" || oper.oper == "-") ||
-			!num1Val.status || prev_num_used{
-				expre = append(expre, &oper)
-				// fmt.Println("added oper", oper)
+				// проверка на добавление числа на следующей итерации (в предыдущей операции не участвовало, сейчас тоже не будет)
+				if (!num1Val.status || ((oper.oper == "+" || oper.oper == "-") &&
+				(next_oper.status && (next_oper.oper == "*" || next_oper.oper == "/") || !prev_num.status)) || prev_oper.oper == "*" || prev_oper.oper == "/") && 
+				(!prev_num_used || !num2Val.status){
+		
+					
+					expre = append(expre, num1)
+					// fmt.Println("added num1", num1)
+				}
+				// добавление знака на следующую итерацию
+				if (prev_oper.oper == "*" || prev_oper.oper == "/") || 
+				(next_oper.oper == "*" || next_oper.oper == "/") && (oper.oper == "+" || oper.oper == "-") ||
+				!num1Val.status || prev_num_used{
+					expre = append(expre, &oper)
+					// fmt.Println("added oper", oper)
+				}
+				
+				// проведение операции
+				if num1Val.status && num2Val.status && !prev_num_used && prev_oper.status && prev_oper.oper != "*" && prev_oper.oper != "/" && oper.status &&
+				(oper.oper == "*" || oper.oper == "/" ||
+				(oper.oper == "+" || oper.oper == "-") && next_oper.status && next_oper.oper != "*" && next_oper.oper != "/"){
+					if set.Agents.AddOperation(){  // добавляем операцию в воркеров
+						
+						prev_num_used = true  // num2 (в на следующей итерации num1) использовалось
+						operAg := Operation{num1: num1.res, num2: num2.res, oper: oper.oper, status: false}  // создание новой операции
+						// fmt.Println(operAg)
+						expre = append(expre, &operAg)  // добавляем операцию
+						wg.Add(1)
+						// запускаем агента
+						go func(operAgent *Operation, agents *set.Agents_struct) {
+							defer wg.Done()
+							operAgent.Agent()
+							(*agents).OperationMade()  // операция выполнена - освобождаем агента
+							// fmt.Println("prom res", operAgent)
+						}(expre[len(expre)-1], &set.Agents)
+					}
+
+				}else{
+					prev_num_used = false  // число не использовалось
+				}
+				// последнее число, оторое не использовалось
+				if i == len(operation) - 3 && !prev_num_used{ 
+					expre = append(expre, num2)
+					// fmt.Println("added last num", num2)
+				}
+				prev_oper = oper  // обновляем предыдущих
+				prev_num = num1
 			}
-			
-			// проведение операции
-			if num1Val.status && num2Val.status && !prev_num_used && prev_oper.status && prev_oper.oper != "*" && prev_oper.oper != "/" && oper.status &&
-			(oper.oper == "*" || oper.oper == "/" ||
-			  (oper.oper == "+" || oper.oper == "-") && next_oper.status && next_oper.oper != "*" && next_oper.oper != "/"){
-			
-				prev_num_used = true  // num2 (в на следующей итерации num1) использовалось
-				operAg := Operation{num1: num1.res, num2: num2.res, oper: oper.oper, status: false}  // создание новой операции
-				// fmt.Println(operAg)
-				expre = append(expre, &operAg)  // добавляем операцию
-				wg.Add(1)
-				// запускаем агента
-				go func(operAgent *Operation) {
-					defer wg.Done()
-					operAgent.Agent()
-					// fmt.Println("prom res", operAgent)
-				}(expre[len(expre)-1])
+			wg.Wait()  // ждем завершения всех операций
 
-			}else{
-				prev_num_used = false  // число не использовалось
+			res := *operation[0]  // берем первую операцию в operations
+			operation = []*Operation{}  // обновляем operations
+			for _, v := range expre {
+				operation = append(operation, v)
 			}
-			// последнее число, оторое не использовалось
-			if i == len(operation) - 3 && !prev_num_used{ 
-				expre = append(expre, num2)
-				// fmt.Println("added last num", num2)
-			 }
-			prev_oper = oper  // обновляем предыдущих
-			prev_num = num1
-		}
-		wg.Wait()  // ждем завершения всех операций
 
-		res := *operation[0]  // берем первую операцию в operations
-		operation = []*Operation{}  // обновляем operations
-		for _, v := range expre {
-			operation = append(operation, v)
-		}
-
-		// for _, v := range operation {
-			// fmt.Println(v)
-		// }
-		// fmt.Println()
-		if len(operation) == 0{  // в operatins ничего не осталось - посчиталось
-			// fmt.Println("end")
-			expr.Result = res.res // записываем результат
-			expr.End = getTime()  // время конца вычислений
-			expr.Status = true		// статус - посчитано
-			Results = append(Results, *expr)  // добавляем в Results - чтобы server увидел
-			break
+			// for _, v := range operation {
+			// 	fmt.Println(v)
+			// }
+			// fmt.Println()
+			if len(operation) == 0{  // в operatins ничего не осталось - посчиталось
+				// fmt.Println("end")
+				expr.Result = res.res // записываем результат
+				expr.End = getTime()  // время конца вычислений
+				expr.Status = true		// статус - посчитано
+				Results = append(Results, *expr)  // добавляем в Results - чтобы server увидел
+				break
+			}
 		}
 	}
 }

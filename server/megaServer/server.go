@@ -58,7 +58,13 @@ func (s *Storage) Download() {
 		}
 		// записываем новое выражение в storage
 		// структура csv: id, выражение, результат, статус, начало вычислений, конец вычислений
-		s.Append(Expression{Id: id, Expression: line[1], Result: res, Status: stringToBool(line[3]), Start: line[4], End: line[5]})
+		expr := Expression{Id: id, Expression: line[1], Result: res, Status: stringToBool(line[3]), Start: line[4], End: line[5]}
+		s.Append(expr)
+		if !expr.Status{  // выражение не посчитано
+			expr.Separate_expression()  // делим выражение на части
+			expre := orchestrator.Expression{Id: expr.Id, Expression: expr.Expression, Separated_expression: expr.Separated_expression}
+			go expre.Orchestrator()  // отправляем на вычисления
+		}
 	}
 }
 // загрузка данных в csv
@@ -98,12 +104,12 @@ func (s *Storage) Append(exp Expression) {
 	s.Expressions = append(s.Expressions, exp)
 }
 // получение storage из main (там инициализируется)
-func GetStorage(stor Storage) {
-	storage = stor
+func GetStorage(stor *Storage) {
+	storage = *stor
 }
 
 // обработчик главной страницы + check request
-func GettingResponse(w http.ResponseWriter, r *http.Request) {
+func MainPageHandler(w http.ResponseWriter, r *http.Request) {
 	resp := RemoveSpaces(r.FormValue("expression"))  // получение выражения
 	for _, expr := range orchestrator.Results {  // проверка резултатов вычислений из orchestrator
 		if expr.Status && !storage.Expressions[expr.Id].Status {  // статус - тру

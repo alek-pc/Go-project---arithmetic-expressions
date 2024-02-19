@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <title>Ворекеры</title>
+    </head>
+    <body>
+        <h2>Список ворекров (в каждом по 5 агентов)</h2>
+        <a href="/" style="color: inherit;border: 1px cadetblue;">main</a>
+        <a href="/settings" style="color: inherit;">settings</a>
+        {{ range .Agents}}
+            {{if .Busy}}
+                <div style="border: 1px solid greenyellow;width: 250px;">В ворекере сейчас запущено {{.Busy_agents}} агентов</div>
+            {{else}}
+                <div style="border: 1px solid black;width: 250px;">Этот воркер халявщик</div>
+            {{end}}
+        {{end}}
+    </body>
+</html>

@@ -6,6 +6,7 @@
     <body>
         <h1>Settings</h1>
         <div><a href="/" style="color: inherit;">Main</a></div>
+        <a href="/workers" style="color: inherit;">workers</a>
         <div>
             <form method="post" autocomplete="off">
                 <div>
@@ -26,7 +27,7 @@
                 </div>
                 <div>
                     <div>Num of agents</div>
-                    <input name="numOfWorkers" type="number" value="{{.WorkersNum}}" accesskey="Enter" step="5" min="0" max="20">
+                    <input name="numOfWorkers" type="number" value="{{.WorkersNum}}" accesskey="Enter" step="1" min="0" max="20">
                 </div>
                 <input type="submit" accesskey="Enter">
             </form>

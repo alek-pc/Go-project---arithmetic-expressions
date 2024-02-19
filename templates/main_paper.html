@@ -6,7 +6,8 @@
     </head>
     <body>
         <h1>Main page</h1>
-        <div><a href="/settings" style="color: inherit;">settings</a></div>
+        <a href="/settings" style="color: inherit;">settings</a>
+        <a href="/workers" style="color: inherit;">workers</a>
         
         <form method="post">
             <div>
@@ -19,7 +20,7 @@
         {{end}}
         {{range .Expressions}}
             {{if .Status}}
-                <div style="background-color: greenyellow;">{{.Expression}} = {{ .Result }}    start: {{ .Start}} end: {{.End}}</div>
+                <div style="border: 1px solid yellowgreen;width: 650px;">{{.Expression}} = {{ .Result }}    start: {{ .Start}} end: {{.End}}</div>
             {{ else}}
             <div>{{.Expression}} - computing</div>
             {{end}}
