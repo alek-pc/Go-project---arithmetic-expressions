@@ -47,7 +47,7 @@ Operation поля: num1 int - первое число, oper string - опера
 7 - отправка формы
 
 
-# Примеры
+# Примеры (переходим по ссылке: http://127.0.0.1:8080/)
 *для того чтобы увидеть результат надо обновить страницу
 ![example](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/example.png)
 
