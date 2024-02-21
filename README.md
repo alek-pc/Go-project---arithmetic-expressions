@@ -69,6 +69,7 @@ Operation поля: num1 int - первое число, oper string - опера
 
 
 ![workers page](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/workers_page.png)
+
 1 - список воркеров (типа серверы), у каждого подписано кол-во занятых агентов\
 2 - переход на другие страницы
 
