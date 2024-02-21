@@ -4,7 +4,7 @@
 ![example](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/example.png)
 
 *деление только целочисленное (2/8 = 0), поэтому при подборе примеров учитывайте это
-2 + 2 * 2 = 6 \n
+2 + 2 * 2 = 6 \
 5 * 10 / 5 - 60 / 15 + 20 = 46
 120 * 5 - 95 * 3 + 65 / 5 = 328
 50 * 5 / 2 - 65 / 13 = 120
