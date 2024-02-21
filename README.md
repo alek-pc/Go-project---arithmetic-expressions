@@ -1,19 +1,18 @@
 # Go-project---arithmetic-expressions
 # Примеры (переходим по ссылке: http://127.0.0.1:8080/)
-*для того чтобы увидеть результат надо обновить главную страницу страницу
-![example](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/example.png)
+*для того чтобы увидеть результат надо обновить главную страницу страницу\
+![example](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/example.png)\
 
 *деление только целочисленное (2/8 = 0), поэтому при подборе примеров учитывайте это\
 2 + 2 * 2 = 6\
 5 * 10 / 5 - 60 / 15 + 20 = 46\
-120 * 5 - 95 * 3 + 65 / 5 = 328
-50 * 5 / 2 - 65 / 13 = 120
-10 * 10 * 60 / 100 = 60 
-
-10 * 0 = 0 
+120 * 5 - 95 * 3 + 65 / 5 = 328\
+50 * 5 / 2 - 65 / 13 = 120\
+10 * 10 * 60 / 100 = 60\
+10 * 0 = 0\ 
 
 Схема программы в кратком виде:
-![scheme](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/Scheme.jpg)
+![scheme](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/Scheme.jpg)\
 
 Начнем по порядку:
 # Главная страница /
@@ -23,13 +22,13 @@
 Выражение (уже структура Expression) -> orchestrator.Expression -> server.orchestrator
 
 # Оркестратор
-находится в server/orchestrator
-Выражение переводится в operations - массив объектов Operation
+находится в server/orchestrator\
+Выражение переводится в operations - массив объектов Operation\
 Operation поля: num1 int - первое число, oper string - операция в выражении, num2 int - второе число, res int - результат выражения, status bool - статус выражения: true - посчитано, false - считается
 В бесконечном цикле проходимся по operations, берем число сейчас и следующее, если операция посчитана, то проверяем другие условия и закидываем в Agent (считает только одну операцию)
 В цикле массив operations уменьшается и когда его длина становится нулем, то выражение подсчитано - записываем время конца подсчета, результат и обновляем статус на true
 
-В GettingResponse проверяем expression на status, если статус - true, storage.Update() - обновляем сторэдж и файл expressions_logs.csv
+В MainPageHandler проверяем expression на status, если статус - true, storage.Update() - обновляем сторэдж и файл expressions_logs.csv
 
 #  Страница настроек /settings
 Чекаем форму, чекаем ее содержимое, загружаем изменения в settings.csv (settings.Upload()), показываем настройки (SettingsPage)
