@@ -44,7 +44,7 @@ Operation поля: num1 int - первое число, oper string - опера
 запуск сервера
 
 # Дизайн страниц
-![MainPage](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/Main%20page%20design.png)
+![MainPage](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/main%20page.png)
 
 1 - строка ввода выражения (тег input)\
 2 - сообщение от сервера\
