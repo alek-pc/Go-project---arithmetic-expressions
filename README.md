@@ -46,6 +46,7 @@ Operation поля: num1 int - первое число, oper string - опера
 
 # Дизайн страниц
 ![MainPage](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/Main%20page%20design.png)
+
 1 - строка ввода выражения (тег input)\
 2 - сообщение от сервера\
 3 - список выражений (зеленый - посчитано) строка вида: выражение строкой = ответ start: время начала вычислений end: время конца вычислений\
@@ -64,7 +65,7 @@ Operation поля: num1 int - первое число, oper string - опера
 
 ![workers page](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/workers_page.png)
 1 - список воркеров (типа серверы), у каждого подписано кол-во занятых агентов\
-2 - переход на другие страницы\
+2 - переход на другие страницы
 
 По вопросам связывайтесь в тг: (https://t.me/alek_asd)
 
