@@ -19,17 +19,20 @@ type Settings struct {
 	WorkersNum         int // кол-во воркеров
 }
 
+// структура агента
 type Agent struct {
-	MaxNum int
-	CurNum int
-	Busy   bool
+	MaxNum int  // макс кол-во агентов в 1 воркере (5)
+	CurNum int  // кол-во свободных агентов в воркере
+	Busy   bool  // хотя бы 1 агент занят
 }
+// структура агентов
 type Agents_struct struct {
 	Agents []Agent
 }
 
 var Agents Agents_struct
 
+// свободные агенты
 func (ags *Agents_struct) FreeAgent() bool {
 	for _, ag := range ags.Agents {
 		if ag.CurNum > 0 {
@@ -38,19 +41,26 @@ func (ags *Agents_struct) FreeAgent() bool {
 	}
 	return false
 }
+// добавить агента воркера
 func (ags *Agents_struct) AddAgent(ag Agent) {
 	ags.Agents = append(ags.Agents, ag)
 }
+// добавляем операцию
 func (ags *Agents_struct) AddOperation() bool {
+	max_ag := -1
 	for ag := range ags.Agents {
-		if ags.Agents[ag].CurNum > 0 {
-			ags.Agents[ag].CurNum--
-			ags.Agents[ag].Busy = true
-			return true
+		if ags.Agents[ag].CurNum > 0 && (max_ag == -1 || ags.Agents[ag].CurNum > ags.Agents[max_ag].CurNum) {
+			max_ag = ag
 		}
 	}
-	return false
+	if max_ag == -1{
+		return false
+	}
+	ags.Agents[max_ag].CurNum --
+	ags.Agents[max_ag].Busy = true
+	return true
 }
+// операция выполнена
 func (ags *Agents_struct) OperationMade() {
 	for i := len(ags.Agents) - 1; i >= 0; i-- {
 		if ags.Agents[i].CurNum < ags.Agents[i].MaxNum {
@@ -145,7 +155,7 @@ func (s *Settings) Download() {
 
 // инициализация Settings
 func Init() *Settings {
-	set := Settings{PlusTime: 10, MinusTime: 10, DivisionTime: 10, MultiplicationTime: 10} // данные по умолчанию
+	set := Settings{PlusTime: 10, MinusTime: 10, DivisionTime: 10, MultiplicationTime: 10, WorkersNum: 3} // данные по умолчанию
 	set.Download()                                                                         // загрузка из СУБД
 	Agents = Agents_struct{Agents: make([]Agent, 0)}
 	for {
