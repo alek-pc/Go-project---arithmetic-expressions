@@ -43,7 +43,6 @@ Operation поля: num1 int - первое число, oper string - опера
 Инициализирование settings.Settings (загрузка (settings.Upload) данных из csv) и закидываем в settings (SendSettings)
 запуск сервера
 
-
 # Дизайн страниц
 ![MainPage](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/Main%20page%20design.png)
 
@@ -51,7 +50,8 @@ Operation поля: num1 int - первое число, oper string - опера
 2 - сообщение от сервера\
 3 - список выражений (зеленый - посчитано) строка вида: выражение строкой = ответ start: время начала вычислений end: время конца вычислений\
 4 - переход на страницу настроек. Клик!\
-(какой переход!)\
+(какой переход!)
+
 ![Settings page](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/settings%20page%20design.png)
 
 1 - переход на главную страницу\
