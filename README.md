@@ -15,7 +15,7 @@
 120 * 5 - 95 * 3 + 65 / 5 = 328\
 50 * 5 / 2 - 65 / 13 = 120\
 10 * 10 * 60 / 100 = 60\
-10 * 0 = 0\
+10 * 0 = 0
 
 Схема программы в кратком виде:
 ![scheme](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/Scheme.jpg)
