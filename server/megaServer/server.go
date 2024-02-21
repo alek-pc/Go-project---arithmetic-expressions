@@ -183,6 +183,9 @@ func (ex *Expression) Separate_expression() string {
 				separatedExpression[len(separatedExpression)-2] = "+"
 			} else {
 				separatedExpression = append(separatedExpression, string(sign))
+				if string(sign) == "0" && separatedExpression[len(separatedExpression)-2] == "/" {
+					return "division by zero!!!"
+				}
 			}
 		} else if in(string(sign), "+-/*") {
 			if i == len(expression)-1 {
