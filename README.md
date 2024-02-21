@@ -1,4 +1,8 @@
 # Go-project---arithmetic-expressions
+# Запуск проги
+1 - скачиваем проект\
+2 - запускаем main.go - все!
+
 # Примеры (переходим по ссылке: http://127.0.0.1:8080/)
 *для того чтобы увидеть результат надо обновить главную страницу страницу\
 ![example](https://github.com/alek-pc/Go-project---arithmetic-expressions/blob/main/src/example.png)\
